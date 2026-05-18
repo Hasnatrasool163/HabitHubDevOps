@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: habithub-db-pvc
+  namespace: habithub
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habithub-db
+  namespace: habithub
+  labels:
+    app: habithub-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habithub-db
+  template:
+    metadata:
+      labels:
+        app: habithub-db
+    spec:
+      containers:
+        - name: postgres
+          image: hasnat163/habithub-db:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: habithub-config
+                  key: DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: habithub-config
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: habithub-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: db-storage
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "habithub"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: habithub-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: habithub-db
+  namespace: habithub
+spec:
+  selector:
+    app: habithub-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

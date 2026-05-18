@@ -1,0 +1,68 @@
+networks:
+  habithub-net:
+    driver: bridge
+
+volumes:
+  habithub-data:
+    name: habithub-data
+
+services:
+
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: habithub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: habithub
+      POSTGRES_USER: habithub
+      POSTGRES_PASSWORD: habithub123
+    volumes:
+      - habithub-data:/var/lib/postgresql/data
+    networks:
+      - habithub-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U habithub -d habithub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: habithub-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: habithub
+      DB_USER: habithub
+      DB_PASSWORD: habithub123
+    networks:
+      - habithub-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: habithub-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    networks:
+      - habithub-net

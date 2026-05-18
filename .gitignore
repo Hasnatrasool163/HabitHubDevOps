@@ -1,3 +1,9 @@
-node_modules
+node_modules/
+*.db
+*.log
 .env
-test.js
+.DS_Store
+__pycache__/
+*.pyc
+dist/
+.cache/
