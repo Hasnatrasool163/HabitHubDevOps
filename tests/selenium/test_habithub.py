@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-BASE_URL = "http://localhost"
+BASE_URL = "http://localhost:8080"
 
 class HabitHubTests(unittest.TestCase):
 
