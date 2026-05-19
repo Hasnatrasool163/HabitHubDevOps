@@ -217,16 +217,18 @@ jobs:
       # Deploy Kubernetes Manifests
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f k8s/ -n default
 
       # Restart Deployments
       - name: Restart Kubernetes Deployments
         run: |
-          kubectl rollout restart deployment habithub-backend
-          kubectl rollout restart deployment habithub-frontend
+          kubectl rollout restart deployment habithub-backend -n default
+          kubectl rollout restart deployment habithub-frontend -n default
+          kubectl rollout restart deployment habithub-db -n default
 
       # Verify Deployment
       - name: Verify Deployment
         run: |
-          kubectl get pods
-          kubectl get services
+          kubectl get pods -n default
+          kubectl get services -n default
+        
