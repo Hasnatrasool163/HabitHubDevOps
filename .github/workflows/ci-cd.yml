@@ -211,7 +211,7 @@ jobs:
         run: |
           az aks get-credentials \
             --resource-group my_k8s_cluster_group \
-            --name YOUR_AKS_CLUSTER_NAME \
+            --name my_k8s_cluster \
             --overwrite-existing
 
       # Deploy Kubernetes Manifests
