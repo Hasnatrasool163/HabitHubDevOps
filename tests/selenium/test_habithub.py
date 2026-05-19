@@ -1,5 +1,6 @@
 import time
 import unittest
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,7 +14,9 @@ class HabitHubTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         opts = Options()
-        opts.add_argument("--headless")
+        headless = os.environ.get("SELENIUM_HEADLESS", "0").lower() in {"1", "true", "yes", "on"}
+        if headless:
+            opts.add_argument("--headless=new")
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--window-size=1280,800")
