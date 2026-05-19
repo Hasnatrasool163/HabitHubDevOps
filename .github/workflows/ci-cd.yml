@@ -80,7 +80,6 @@
 #         run: |
 #           docker push ${{ secrets.DOCKER_USERNAME }}/habithub-db
 
-
 name: HabitHub CI/CD Pipeline
 
 on:
@@ -104,10 +103,9 @@ env:
   DATABASE_IMAGE: ${{ secrets.DOCKER_USERNAME }}/habithub-db:latest
 
 jobs:
-
-# =========================================
-# 1. BUILD & TEST
-# =========================================
+  # =========================================
+  # 1. BUILD & TEST
+  # =========================================
   build-and-test:
     runs-on: ubuntu-latest
 
@@ -142,9 +140,9 @@ jobs:
         run: |
           npm run build || echo "Frontend build skipped"
 
-# =========================================
-# 2. DOCKER BUILD & PUSH
-# =========================================
+  # =========================================
+  # 2. DOCKER BUILD & PUSH
+  # =========================================
   docker-build-push:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -187,9 +185,9 @@ jobs:
         run: |
           docker push $DATABASE_IMAGE
 
-# =========================================
-# 3. DEPLOY TO AZURE AKS
-# =========================================
+  # =========================================
+  # 3. DEPLOY TO AZURE AKS
+  # =========================================
   deploy-to-aks:
     needs: docker-build-push
     runs-on: ubuntu-latest
@@ -212,7 +210,7 @@ jobs:
       - name: Get AKS Credentials
         run: |
           az aks get-credentials \
-            --resource-group YOUR_RESOURCE_GROUP \
+            --resource-group my_k8s_cluster_group \
             --name YOUR_AKS_CLUSTER_NAME \
             --overwrite-existing
 
