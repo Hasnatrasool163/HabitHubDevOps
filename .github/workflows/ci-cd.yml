@@ -215,20 +215,21 @@ jobs:
             --overwrite-existing
 
       # Deploy Kubernetes Manifests
+      # Deploy Kubernetes Manifests
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/ -n default
-
+          kubectl apply -f k8s/
+      
       # Restart Deployments
       - name: Restart Kubernetes Deployments
         run: |
-          kubectl rollout restart deployment habithub-backend -n default
-          kubectl rollout restart deployment habithub-frontend -n default
-          kubectl rollout restart deployment habithub-db -n default
-
+          kubectl rollout restart deployment habithub-backend -n habithub
+          kubectl rollout restart deployment habithub-frontend -n habithub
+          kubectl rollout restart deployment habithub-db -n habithub
+      
       # Verify Deployment
       - name: Verify Deployment
         run: |
-          kubectl get pods -n default
-          kubectl get services -n default
+          kubectl get pods -n habithub
+          kubectl get services -n habithub
         
